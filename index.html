@@ -12,6 +12,7 @@
     <script type="text/javascript">
       var canvas = document.getElementById("playground");
       var ctx = canvas.getContext('2d');
+      var resourcesToLoad = 2;
       var KEYBOARD = {
         "UP"    : 38,
         "LEFT"  : 37,
@@ -19,15 +20,36 @@
         "RIGHT" : 39 
       };
 
+      var xSpaceBetweenPipe = 100;
+      var ySpaceBetwwenPipe = 80;
+      var pipes = [{x: 250, y: randomY()}, {x: 400, y: randomY()},{x: 550, y: randomY()},{x: 700, y: randomY()},{x: 850, y: randomY()}];
+
       var mario = new Image();
       mario.addEventListener("load", function () {
-        setInterval(draw, 20);
-      }, false);
+        resourcesToLoad--;
+      });
       mario.src = "images/mario.png";
       mario.xPos = 0;
-      mario.yPos = 170;
+      mario.yPos = 85;
       mario.xSpeed = 0;
       mario.ySpeed = 0;
+
+      var pipe = new Image();
+      pipe.addEventListener("load", function () {
+        resourcesToLoad--;
+      });
+      pipe.src = "images/pipe.png";
+
+      initOnResourcesLoad();
+
+      function initOnResourcesLoad () {
+        if (resourcesToLoad > 0) {
+          setTimeout(initOnResourcesLoad, 50);
+        }
+        else {
+          setInterval(draw, 20);
+        }
+      }
 
       window.addEventListener("keydown", function (event) {
         if (event.keyCode === KEYBOARD.LEFT) {
@@ -37,10 +59,10 @@
           mario.xSpeed = 5;
         }
         else if (event.keyCode === KEYBOARD.UP) {
-          if (mario.ySpeed !== 0) {
-            return;
-          }
-          mario.ySpeed = 8;
+          // if (mario.yPos !== 170) {
+          //   return;
+          // }
+          mario.ySpeed = 5;
         }
       });
 
@@ -53,27 +75,55 @@
         }
       });
 
+      function randomY () {
+        return Math.floor(Math.random() * (200 - ySpaceBetwwenPipe)) + ySpaceBetwwenPipe / 2;
+      }
+
       function draw () {
-        ctx.clearRect(0,0,500,200)
+        ctx.clearRect(0,0,500,200);
+        ctx.globalCompositeOperation = "destination-over";
         mario.xPos = mario.xPos + mario.xSpeed;
         mario.yPos = mario.yPos - mario.ySpeed;
 
         if (mario.xPos < 0) {
           mario.xPos = 0;
         }
+        else if (mario.xPos >= 235) {
+          mario.xPos = 235;
+          pipes.forEach(function (pipePos) {
+            pipePos.x -= 1;
+          });
 
-        if (mario.xPos > 470) {
-          mario.xPos = 470;
+          if (pipes[0].x + 25 <= 0) {
+            pipes.shift();
+            pipes.push({x: pipes[pipes.length - 1].x + 150, y: randomY()})
+          }
+        }
+        else {
+          mario.xPos += 1;
         }
 
-        if (mario.yPos < 100) {
-          mario.ySpeed = -mario.ySpeed;
-        }
-        else if (mario.yPos > 170) {
+        if (mario.yPos > 170) {
           mario.yPos = 170;
           mario.ySpeed = 0;
         }
+        else if (mario.yPos < 0) {
+          mario.yPos = 0;
+          mario.ySpeed = 0;
+        }
+        else {
+          mario.ySpeed -= 0.5;
+        }
+
         ctx.drawImage(mario, mario.xPos, mario.yPos, 30, 30);
+
+        pipes.forEach(function (pipePos) {
+          ctx.drawImage(pipe, (pipePos.x - 25), (pipePos.y + (ySpaceBetwwenPipe / 2)), 50, 154);
+          ctx.save();
+          ctx.scale(1, -1);
+          ctx.drawImage(pipe, (pipePos.x - 25), -(pipePos.y - (ySpaceBetwwenPipe / 2)), 50, 154);
+          ctx.restore();
+        });
       }
     </script>
   </body>
