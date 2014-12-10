@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      #playground {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="playground" width="500" height="200"></canvas>
+    <script type="text/javascript">
+      var canvas = document.getElementById("playground");
+      var ctx = canvas.getContext('2d');
+      var KEYBOARD = {
+        "UP"    : 38,
+        "LEFT"  : 37,
+        "DOWN"  : 40,
+        "RIGHT" : 39 
+      };
+
+      var mario = new Image();
+      mario.addEventListener("load", function () {
+        setInterval(draw, 20);
+      }, false);
+      mario.src = "images/mario.png";
+      mario.xPos = 0;
+      mario.yPos = 170;
+      mario.xSpeed = 0;
+      mario.ySpeed = 0;
+
+      window.addEventListener("keydown", function (event) {
+        if (event.keyCode === KEYBOARD.LEFT) {
+          mario.xSpeed = -5;
+        }
+        else if (event.keyCode === KEYBOARD.RIGHT) {
+          mario.xSpeed = 5;
+        }
+        else if (event.keyCode === KEYBOARD.UP) {
+          if (mario.ySpeed !== 0) {
+            return;
+          }
+          mario.ySpeed = 8;
+        }
+      });
+
+      window.addEventListener("keyup", function () {
+        if (event.keyCode === KEYBOARD.LEFT) {
+          mario.xSpeed = 0;
+        }
+        else if (event.keyCode === KEYBOARD.RIGHT) {
+          mario.xSpeed = 0;
+        }
+      });
+
+      function draw () {
+        ctx.clearRect(0,0,500,200)
+        mario.xPos = mario.xPos + mario.xSpeed;
+        mario.yPos = mario.yPos - mario.ySpeed;
+
+        if (mario.xPos < 0) {
+          mario.xPos = 0;
+        }
+
+        if (mario.xPos > 470) {
+          mario.xPos = 470;
+        }
+
+        if (mario.yPos < 100) {
+          mario.ySpeed = -mario.ySpeed;
+        }
+        else if (mario.yPos > 170) {
+          mario.yPos = 170;
+          mario.ySpeed = 0;
+        }
+        ctx.drawImage(mario, mario.xPos, mario.yPos, 30, 30);
+      }
+    </script>
+  </body>
+</html>
