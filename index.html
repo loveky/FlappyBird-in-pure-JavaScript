@@ -13,7 +13,7 @@
       var canvas = document.getElementById("playground");
       var ctx = canvas.getContext('2d');
       var intervalID = null;
-      var resourcesToLoad = 2;
+      var resourcesToLoad = 3;
       var isDead = false;
       var score = 0;
       var pipesDestroied = 0;
@@ -45,6 +45,13 @@
       });
       pipe.src = "images/pipe.png";
 
+      var flySound = new Audio();
+      flySound.autoplay = false;
+      flySound.addEventListener("canplaythrough", function () {
+        resourcesToLoad--;
+      });
+      flySound.src = "sounds/fly.wav";
+
       initOnResourcesLoad();
 
       function initOnResourcesLoad () {
@@ -64,6 +71,7 @@
           mario.xSpeed = 5;
         }
         else if (event.keyCode === KEYBOARD.UP) {
+          flySound.play();
           mario.ySpeed = 5;
         }
       });
