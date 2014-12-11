@@ -12,7 +12,12 @@
     <script type="text/javascript">
       var canvas = document.getElementById("playground");
       var ctx = canvas.getContext('2d');
+      var intervalID = null;
       var resourcesToLoad = 2;
+      var isDead = false;
+      var score = 0;
+      var pipesDestroied = 0;
+      var pipesPassedInScreen = 0;
       var KEYBOARD = {
         "UP"    : 38,
         "LEFT"  : 37,
@@ -47,7 +52,7 @@
           setTimeout(initOnResourcesLoad, 50);
         }
         else {
-          setInterval(draw, 20);
+          intervalID = setInterval(draw, 20);
         }
       }
 
@@ -59,9 +64,6 @@
           mario.xSpeed = 5;
         }
         else if (event.keyCode === KEYBOARD.UP) {
-          // if (mario.yPos !== 170) {
-          //   return;
-          // }
           mario.ySpeed = 5;
         }
       });
@@ -80,6 +82,7 @@
       }
 
       function draw () {
+        pipesPassedInScreen = 0;
         ctx.clearRect(0,0,500,200);
         ctx.globalCompositeOperation = "destination-over";
         mario.xPos = mario.xPos + mario.xSpeed;
@@ -96,7 +99,8 @@
 
           if (pipes[0].x + 25 <= 0) {
             pipes.shift();
-            pipes.push({x: pipes[pipes.length - 1].x + 150, y: randomY()})
+            pipes.push({x: pipes[pipes.length - 1].x + 150, y: randomY()});
+            pipesDestroied++;
           }
         }
         else {
@@ -115,6 +119,9 @@
           mario.ySpeed -= 0.5;
         }
 
+        ctx.font = "15pt Arial";
+        ctx.fillText("Score: " + score, 10, 20);
+
         ctx.drawImage(mario, mario.xPos, mario.yPos, 30, 30);
 
         pipes.forEach(function (pipePos) {
@@ -124,6 +131,38 @@
           ctx.drawImage(pipe, (pipePos.x - 25), -(pipePos.y - (ySpaceBetwwenPipe / 2)), 50, 154);
           ctx.restore();
         });
+
+        //
+        // Check if game is over
+        //
+
+        // when mario fall to the ground
+        if (mario.yPos >= 170) {
+          isDead = true;
+        }
+
+        // when mario hit one of the pipes
+        pipes.forEach(function (pipePos) {
+          if (mario.xPos > pipePos.x + 25 || mario.xPos + 30 < pipePos.x - 25) {
+            if (mario.xPos > pipePos.x + 25) {
+              pipesPassedInScreen++;
+            }
+            return;
+          }
+          else if ((mario.yPos > pipePos.y - (ySpaceBetwwenPipe / 2)) && (mario.yPos + 30 < pipePos.y + (ySpaceBetwwenPipe / 2))) {
+            return;
+          }
+          else {
+            isDead = true;
+          }
+        });
+
+        score = pipesDestroied + pipesPassedInScreen;
+
+        if (isDead) {
+          clearInterval(intervalID);
+          alert("GAME OVER\nFinal Score: " + score);
+        }
       }
     </script>
   </body>
