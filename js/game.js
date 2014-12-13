@@ -1,6 +1,9 @@
 (function (window, document) {
   'use strict';
 
+  var isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
+  var isIE = /*@cc_on!@*/false || !!document.documentMode;
+
   function Game (elementID) {
     var game = this;
     var canvas = document.getElementById(elementID);
@@ -102,7 +105,7 @@
 
   Game.prototype.scoreSound = new Audio();
   Game.prototype.scoreSound.autoplay = false;
-  Game.prototype.scoreSound.src = "sounds/score.ogg";
+  Game.prototype.scoreSound.src = isSafari || isIE ? "sounds/score.mp3" : "sounds/score.ogg";
 
   function Gap (game, xPos) {
     this.game = game;
@@ -203,7 +206,7 @@
 
   Bird.prototype.sound = new Audio();
   Bird.prototype.sound.autoplay = false;
-  Bird.prototype.sound.src = "sounds/fly.ogg";
+  Bird.prototype.sound.src = isSafari || isIE ? "sounds/fly.mp3" : "sounds/fly.ogg";
 
   Bird.prototype.image = new Image();
   Bird.prototype.image.addEventListener("load", function () {
