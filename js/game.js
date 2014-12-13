@@ -64,7 +64,10 @@
         }
       });
 
-      game.score = gaps.passed + gaps.destroied;
+      if (gaps.passed + gaps.destroied > game.score) {
+        game.scoreSound.play();
+        game.score = gaps.passed + gaps.destroied;
+      }
 
       render();
     } 
@@ -96,6 +99,10 @@
   Game.prototype.clearScreen = function () {
     this.ctx.clearRect(0, 0, this.screenWidth, this.screenHeight);
   };
+
+  Game.prototype.scoreSound = new Audio();
+  Game.prototype.scoreSound.autoplay = false;
+  Game.prototype.scoreSound.src = "sounds/score.ogg";
 
   function Gap (game, xPos) {
     this.game = game;
@@ -148,6 +155,7 @@
     this.keydownHandler = function (event) {
       if (event.keyCode === 13) {
         this.ySpeed = 5;
+        this.sound.play();
       }
     }.bind(this);
 
@@ -192,6 +200,10 @@
     window.removeEventListener("keydown", this.keydownHandler, false);
     this.game.gameover();
   };
+
+  Bird.prototype.sound = new Audio();
+  Bird.prototype.sound.autoplay = false;
+  Bird.prototype.sound.src = "sounds/fly.ogg";
 
   Bird.prototype.image = new Image();
   Bird.prototype.image.addEventListener("load", function () {
