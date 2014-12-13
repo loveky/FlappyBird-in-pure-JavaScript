@@ -155,7 +155,7 @@
   }
 
   Bird.prototype.width = 30;
-  Bird.prototype.height = 30;
+  Bird.prototype.height = 21;
 
   Bird.prototype.render = function () {
     this.game.ctx.globalCompositeOperation = "destination-over";
@@ -197,7 +197,7 @@
   Bird.prototype.image.addEventListener("load", function () {
     Bird.ready = true;
   });
-  Bird.prototype.image.src = "images/mario.png";
+  Bird.prototype.image.src = "images/bird.png";
 
   new Game("playground");
 })(window, window.document);
