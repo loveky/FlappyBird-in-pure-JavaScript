@@ -104,7 +104,7 @@
     this.xSpeed = 1.5;
   }
 
-  Gap.prototype.height = 80;
+  Gap.prototype.height = 70;
   Gap.prototype.width = 50;
 
   Gap.prototype.render = function () {
